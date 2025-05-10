@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +37,9 @@ fun SharedTransitionScope.SelectDatabaseScreen(
                 painter = painterResource(id = R.drawable.baseline_qr_code_24),
                 contentDescription = null,
                 modifier = Modifier.padding(vertical = 32.dp)
+            )
+            Text(
+                text = "Select Database",
             )
         }
     }
