@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <string name="app_name">The New York Times</string>
+  <string name="all_news">All news</string>
+  <string name="favorite_news">Favorite news</string>
+  <string name="empty_favorites">Nothing here</string>
+  <string name="share_article_message">Look at this article!\n%s</string>
+</resources>
