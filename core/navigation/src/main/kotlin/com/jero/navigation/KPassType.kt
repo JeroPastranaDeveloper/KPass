@@ -4,22 +4,22 @@ import android.net.Uri
 import android.os.Bundle
 import androidx.core.os.BundleCompat
 import androidx.navigation.NavType
-import com.jero.model.KPass
+import com.jero.core.model.Account
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
-object KPassType : NavType<KPass>(isNullableAllowed = false) {
+object KPassType : NavType<Account>(isNullableAllowed = false) {
 
-    override fun put(bundle: Bundle, key: String, value: KPass) {
+    override fun put(bundle: Bundle, key: String, value: Account) {
         bundle.putParcelable(key, value)
     }
 
-    override fun get(bundle: Bundle, key: String): KPass? =
-        BundleCompat.getParcelable(bundle, key, KPass::class.java)
+    override fun get(bundle: Bundle, key: String): Account? =
+        BundleCompat.getParcelable(bundle, key, Account::class.java)
 
-    override fun parseValue(value: String): KPass {
+    override fun parseValue(value: String): Account {
         return Json.decodeFromString(Uri.decode(value))
     }
 
-    override fun serializeAsValue(value: KPass): String = Uri.encode(Json.encodeToString(value))
+    override fun serializeAsValue(value: Account): String = Uri.encode(Json.encodeToString(value))
 }

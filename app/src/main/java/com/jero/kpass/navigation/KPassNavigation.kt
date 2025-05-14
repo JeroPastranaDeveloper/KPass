@@ -3,9 +3,11 @@ package com.jero.kpass.navigation
 import androidx.compose.animation.SharedTransitionScope
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.jero.add_edit_account.AddEditAccountScreen
+import com.jero.home.AccountsScreen
 import com.jero.login.KPassHome
-import com.jero.select_database.SelectDatabaseScreen
 import com.jero.navigation.KPassScreen
+import com.jero.select_database.SelectDatabaseScreen
 
 context(SharedTransitionScope)
 fun NavGraphBuilder.kpassNavigation() {
@@ -17,10 +19,13 @@ fun NavGraphBuilder.kpassNavigation() {
         SelectDatabaseScreen(this)
     }
 
-    // TODO: Para añadir otra pantalla; cada pantalla es un submódulo de :feature
-    /*composable<NewsScreen.Details>(
-        typeMap = KPassScreen.Details.typeMap
+    composable<KPassScreen.Accounts> {
+        AccountsScreen(this)
+    }
+
+    composable<KPassScreen.AddEditAccount>(
+        typeMap = KPassScreen.AddEditAccount.typeMap
     ) {
-        NewDetailScreen(this)
-    }*/
+        AddEditAccountScreen(this)
+    }
 }
