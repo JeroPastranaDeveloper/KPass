@@ -56,7 +56,6 @@ dependencies {
     implementation(projects.core.navigation)
     implementation(projects.core.designsystem)
     implementation(projects.core.data)
-    implementation(projects.core.database)
     implementation(projects.core.viewmodel)
 
     // Feature

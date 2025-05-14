@@ -31,7 +31,6 @@ jetbrainsKotlinJvm = "2.0.0"
 annotationJvm = "1.9.1"
 androidxTest = "1.6.1"
 foundationAndroid = "1.8.1"
-androidxRoom = "2.7.1"
 firebaseCrashlyticsBuildtools = "3.0.3"
 gson = "2.11.0"
 
@@ -80,11 +79,6 @@ koin-androidx-navigation = { module = "io.insert-koin:koin-androidx-navigation",
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 compose-compiler-gradlePlugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
-
-#ROOM
-androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidxRoom" }
-androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "androidxRoom" }
-androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidxRoom" }
 
 #Retrofit
 retrofit-bom = { module = "com.squareup.retrofit2:retrofit-bom", version.ref = "retrofit" }

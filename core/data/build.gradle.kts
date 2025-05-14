@@ -33,14 +33,10 @@ dependencies {
 
     // network
     implementation(libs.sandwich)
-    implementation(projects.core.database)
     /*testImplementation(projects.core.test)
     testImplementation(projects.feature.home)
     testImplementation(projects.utils)
     testImplementation(projects.feature.details)*/
-    ksp(libs.androidx.room.compiler)
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
 
     implementation(libs.gson)
 
