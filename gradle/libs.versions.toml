@@ -31,6 +31,9 @@ jetbrainsKotlinJvm = "2.0.0"
 annotationJvm = "1.9.1"
 androidxTest = "1.6.1"
 foundationAndroid = "1.8.1"
+androidxRoom = "2.7.1"
+firebaseCrashlyticsBuildtools = "3.0.3"
+gson = "2.11.0"
 
 [libraries]
 androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -78,6 +81,11 @@ android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", ver
 compose-compiler-gradlePlugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
 
+#ROOM
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "androidxRoom" }
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "androidxRoom" }
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "androidxRoom" }
+
 #Retrofit
 retrofit-bom = { module = "com.squareup.retrofit2:retrofit-bom", version.ref = "retrofit" }
 retrofit = { module = "com.squareup.retrofit2:retrofit" }
@@ -90,6 +98,9 @@ androidx-animation-android = { group = "androidx.compose.animation", name = "ani
 androidx-navigation-common-ktx = { group = "androidx.navigation", name = "navigation-common-ktx", version.ref = "navigationCommonKtx" }
 androidx-annotation-jvm = { group = "androidx.annotation", name = "annotation-jvm", version.ref = "annotationJvm" }
 androidx-foundation-android = { group = "androidx.compose.foundation", name = "foundation-android", version.ref = "foundationAndroid" }
+
+firebase-crashlytics-buildtools = { group = "com.google.firebase", name = "firebase-crashlytics-buildtools", version.ref = "firebaseCrashlyticsBuildtools" }
+gson = { group = "com.google.code.gson", name = "gson", version.ref = "gson" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

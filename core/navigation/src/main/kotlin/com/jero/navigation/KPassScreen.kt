@@ -1,6 +1,6 @@
 package com.jero.navigation
 
-import com.jero.model.KPass
+import androidx.navigation.NavType
 import kotlinx.serialization.Serializable
 import kotlin.reflect.typeOf
 
@@ -10,11 +10,16 @@ sealed interface KPassScreen {
 
     @Serializable
     data object SelectDatabase : KPassScreen
-/*// TODO
+
     @Serializable
-    data class Renombrar(val kpass: KPass) : KPassScreen {
+    data object Accounts : KPassScreen
+
+    @Serializable
+    data class AddEditAccount(val id: String) : KPassScreen {
         companion object {
-            val RenombrarTambien = mapOf(typeOf<KPass>() to KPassType)
+            val typeMap = mapOf(
+                typeOf<String>() to NavType.StringType
+            )
         }
-    }*/
+    }
 }
