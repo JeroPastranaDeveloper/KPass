@@ -11,7 +11,6 @@ dependencies {
     implementation(libs.accompanist.systemuicontroller)
 
     /*implementation(projects.utils)
-    implementation(projects.core.database)
     implementation(projects.core.domain)
     implementation(projects.core.viewmodel)
 
