@@ -14,4 +14,5 @@ dependencies {
     implementation(projects.core.database)
     implementation(projects.core.domain)
     implementation(projects.core.screen)
+    implementation(projects.core.utils)
 }

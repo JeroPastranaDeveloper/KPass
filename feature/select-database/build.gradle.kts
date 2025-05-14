@@ -15,5 +15,4 @@ dependencies {
     implementation(projects.core.domain)
     implementation(projects.core.screen)
     implementation(libs.firebase.crashlytics.buildtools)
-    implementation(libs.gson)
 }

@@ -1,12 +1,9 @@
 package com.jero.home
 
-import android.net.Uri
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,12 +20,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.google.firebase.crashlytics.buildtools.reloc.com.google.common.reflect.TypeToken
-import com.google.gson.Gson
+import androidx.core.net.toUri
+import com.example.domain.file_manager.FileManager
 import com.jero.core.designsystem.R
-import com.jero.core.model.Account
 import com.jero.core.screen.HandleActions
 import com.jero.core.screen.SetStatusBarIconsColor
+import com.jero.designsystem.components.CustomDialog
 import com.jero.designsystem.components.KPassAppBar
 import com.jero.home.AccountsViewContract.UiAction
 import com.jero.home.AccountsViewContract.UiIntent
@@ -36,6 +33,7 @@ import com.jero.home.AccountsViewContract.UiState
 import com.jero.navigation.KPassScreen
 import com.jero.navigation.currentComposeNavigator
 import org.koin.androidx.compose.koinViewModel
+import org.koin.compose.koinInject
 
 @Composable
 fun SharedTransitionScope.AccountsScreen(
@@ -47,17 +45,27 @@ fun SharedTransitionScope.AccountsScreen(
     val state by viewModel.state.collectAsState(UiState())
 
     val context = LocalContext.current
+    val fileManager: FileManager = koinInject()
 
     HandleActions(viewModel.actions) { action ->
         when (action) {
-            is UiAction.CreateDatabase,
-            is UiAction.RequestExport -> {
-                // createDatabaseLauncher.launch("kpass_backup.kdbx")
-            }
-
             is UiAction.OnAddEditAccount ->
                 composeNavigator.navigate(KPassScreen.AddEditAccount(action.accountId))
+
+            is UiAction.LoadAccounts -> {
+                val accounts = fileManager.readAccounts(context, action.uri.toUri())
+                viewModel.sendIntent(UiIntent.SetAccounts(accounts))
+            }
+
+            is UiAction.DeleteAccount -> {
+                val updatedAccounts = fileManager.deleteAccount(context, action.uri, action.accountId)
+                viewModel.sendIntent(UiIntent.SetAccounts(updatedAccounts))
+            }
         }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.sendIntent(UiIntent.LoadAccounts)
     }
 
     Scaffold(
@@ -77,13 +85,18 @@ fun SharedTransitionScope.AccountsScreen(
 
             state.accounts.forEach { account ->
                 Text(
-                    text = account.email,
+                    text = account.title,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(8.dp)
-                        .clickable {
-                            viewModel.sendIntent(UiIntent.OnAddEditAccount(account.id))
-                        }
+                        .combinedClickable(
+                            onClick = {
+                                viewModel.sendIntent(UiIntent.OnAddEditAccount(account.id))
+                            },
+                            onLongClick = {
+                                viewModel.sendIntent(UiIntent.OnDeleteAccount(account.id))
+                            }
+                        )
                 )
             }
 
@@ -94,6 +107,17 @@ fun SharedTransitionScope.AccountsScreen(
                 }
             ) {
                 Text(text = "Add Account")
+            }
+
+            if (state.showDeleteAccountDialog) {
+                CustomDialog("** Delete this account?", "** Esta acción no se puede deshacer",
+                    onAccept = {
+                        viewModel.sendIntent(UiIntent.DeleteAccount)
+                    },
+                    onCancel = {
+                        viewModel.sendIntent(UiIntent.HideDeleteAccountDialog)
+                    }
+                )
             }
 
             Button(

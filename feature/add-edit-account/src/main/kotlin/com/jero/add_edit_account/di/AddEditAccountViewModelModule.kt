@@ -5,5 +5,5 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val addEditAccountViewModelModule = module {
-    viewModel { AddEditAccountViewModel(get(), get(), get()) }
+    viewModel { AddEditAccountViewModel(get(), get()) }
 }

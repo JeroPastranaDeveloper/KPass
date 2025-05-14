@@ -1,19 +1,16 @@
 package com.jero.add_edit_account
 
+import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
-import androidx.lifecycle.viewModelScope
-import com.example.domain.repository.roomdatabase.GetAccountById
-import com.example.domain.repository.roomdatabase.SaveAccountRepository
+import com.example.domain.preferences.PreferencesHandler
+import com.jero.add_edit_account.AddEditAccountViewContract.UiAction
 import com.jero.add_edit_account.AddEditAccountViewContract.UiIntent
 import com.jero.add_edit_account.AddEditAccountViewContract.UiState
-import com.jero.add_edit_account.AddEditAccountViewContract.UiAction
 import com.jero.core.model.Account
 import com.jero.core.viewmodel.BaseViewModelWithActions
-import kotlinx.coroutines.launch
 
 class AddEditAccountViewModel(
-    private val getAccountById: GetAccountById,
-    private val saveAccountRepository: SaveAccountRepository,
+    private val preferencesHandler: PreferencesHandler,
     savedStateHandle: SavedStateHandle,
 ) : BaseViewModelWithActions<UiState, UiIntent, UiAction>() {
 
@@ -23,7 +20,9 @@ class AddEditAccountViewModel(
 
     override suspend fun manageIntent(intent: UiIntent) {
         when (intent) {
+            UiIntent.HideErrorDialog -> setState { copy(showErrorDialog = false) }
             is UiIntent.SaveAccount -> saveAccount(intent.account)
+            is UiIntent.SetAccount -> setAccount(intent.account)
         }
     }
 
@@ -32,22 +31,32 @@ class AddEditAccountViewModel(
     }
 
     private fun loadAccount() {
-        viewModelScope.launch {
-            if (accountId.isBlank()) return@launch
-
-            setState { copy(isLoading = true) }
-
-            val account = getAccountById(accountId)
-
-            setState {
-                copy(account = account, isLoading = false)
-            }
+        setState { copy(isLoading = true) }
+        if (accountId.isBlank()) {
+            setState { copy(isLoading = false) }
+        } else {
+            dispatchAction(UiAction.LoadAccountData(accountId, preferencesHandler.databaseUri.toString().toUri()))
         }
     }
 
     private fun saveAccount(account: Account) {
-        viewModelScope.launch {
-            saveAccountRepository(account)
+        val accountWithId = if (account.id.isBlank()) {
+            account.copy(id = generateRandomId())
+        } else {
+            account
+        }
+        dispatchAction(
+            UiAction.SaveOnDatabase(preferencesHandler.databaseUri.orEmpty(), accountWithId)
+        )
+    }
+
+    private fun setAccount(account: Account?) {
+        if (account != null) {
+            setState { copy(account = account, isLoading = false) }
+        } else {
+            setState { copy(isLoading = false, showErrorDialog = true) }
         }
     }
+
+    private fun generateRandomId(): String = java.util.UUID.randomUUID().toString()
 }

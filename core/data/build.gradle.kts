@@ -17,6 +17,7 @@ dependencies {
     api(projects.core.model)
     // implementation(projects.core.network)
     implementation(projects.core.domain)
+    implementation(projects.core.utils)
     // implementation(projects.core.viewmodel)
     // testImplementation(projects.core.test)
 
@@ -40,6 +41,8 @@ dependencies {
     ksp(libs.androidx.room.compiler)
     implementation(libs.androidx.room.runtime)
     implementation(libs.androidx.room.ktx)
+
+    implementation(libs.gson)
 
     // unit test
     /*testImplementation(libs.junit)

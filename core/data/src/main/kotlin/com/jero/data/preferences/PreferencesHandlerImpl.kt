@@ -3,6 +3,7 @@ package com.jero.data.preferences
 import android.content.Context
 import android.content.SharedPreferences
 import com.example.domain.preferences.PreferencesHandler
+import com.jero.core.utils.emptyString
 
 class PreferencesHandlerImpl(context: Context) : PreferencesHandler {
 
@@ -20,7 +21,7 @@ class PreferencesHandlerImpl(context: Context) : PreferencesHandler {
     }
 
     override var databaseUri: String?
-        get() = sharedPreferences.getString(DATABASE_URI, "")
+        get() = sharedPreferences.getString(DATABASE_URI, emptyString())
         set(value) {
             this.edit.putString(DATABASE_URI, value)?.apply()
         }
