@@ -18,15 +18,18 @@ class AccountsViewContract: BaseViewContract() {
         data object ClearPreferences : UiIntent()
         data object DeleteAccount : UiIntent()
         data object HideDeleteAccountDialog : UiIntent()
-        data class OnDeleteAccount(val accountId: String) : UiIntent()
         data object LoadAccounts : UiIntent()
-        data class OnAddEditAccount(val accountId: String = emptyString()) : UiIntent()
+        data class OnAddSeeAccount(val accountId: String = emptyString()) : UiIntent()
+        data class OnDeleteAccount(val accountId: String) : UiIntent()
+        data class OpenExplorer(val index: Int) : UiIntent()
         data class SetAccounts(val accounts: List<Account>) : UiIntent()
     }
 
     sealed class UiAction {
         data class DeleteAccount(val accountId: String, val uri: Uri) : UiAction()
+        data object GoDatabaseSelection : UiAction()
         data class LoadAccounts(val uri: String) : UiAction()
-        data class OnAddEditAccount(val accountId: String) : UiAction()
+        data class OnAddSeeAccount(val accountId: String) : UiAction()
+        data class OpenExplorer(val uri: Uri) : UiAction()
     }
 }

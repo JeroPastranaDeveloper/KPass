@@ -3,10 +3,12 @@ package com.jero.add_edit_account
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -18,7 +20,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
@@ -31,6 +35,7 @@ import com.jero.core.screen.SetStatusBarIconsColor
 import com.jero.core.utils.emptyString
 import com.jero.designsystem.components.CustomDialog
 import com.jero.designsystem.components.KPassAppBar
+import com.jero.core.designsystem.R
 import com.jero.navigation.currentComposeNavigator
 import org.koin.androidx.compose.koinViewModel
 import org.koin.compose.koinInject
@@ -71,8 +76,8 @@ fun SharedTransitionScope.AddEditAccountScreen(
                 onValueChange = {
                     title.value = it
                 },
-                label = { Text("Title") },
-                modifier = Modifier.padding(vertical = 16.dp)
+                label = { Text(stringResource(R.string.title)) },
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
             )
 
             TextField(
@@ -80,8 +85,8 @@ fun SharedTransitionScope.AddEditAccountScreen(
                 onValueChange = {
                     email.value = it
                 },
-                label = { Text("Username") },
-                modifier = Modifier.padding(vertical = 16.dp)
+                label = { Text(stringResource(R.string.email)) },
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
             )
 
             TextField(
@@ -89,36 +94,28 @@ fun SharedTransitionScope.AddEditAccountScreen(
                 onValueChange = {
                     password.value = it
                 },
-                label = { Text("Password") },
-                modifier = Modifier.padding(16.dp)
+                label = { Text(stringResource(R.string.password)) },
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
             )
-
-            if (state.showErrorDialog) {
-                CustomDialog(
-                    titleText = "Error",
-                    bodyText = "Error getting account data",
-                    onAccept = {
-                        viewModel.sendIntent(UiIntent.HideErrorDialog)
-                    },
-                    onCancel = {
-                        viewModel.sendIntent(UiIntent.HideErrorDialog)
-                    }
-                )
-            }
 
             TextField(
                 value = description.value,
                 onValueChange = {
                     description.value = it
                 },
-                label = { Text("Description") },
-                modifier = Modifier.padding(16.dp)
+                label = { Text(stringResource(R.string.description)) },
+                modifier = Modifier.fillMaxWidth().padding(16.dp)
             )
 
+            Spacer(modifier = Modifier.weight(1f))
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Black,
+                    contentColor = Color.White
+                ),
                 onClick = {
                     val account = Account(
                         id = state.account.id,
@@ -131,6 +128,19 @@ fun SharedTransitionScope.AddEditAccountScreen(
                 }
             ) {
                 Text(text = "Save")
+            }
+
+            if (state.showErrorDialog) {
+                CustomDialog(
+                    titleText = "Error",
+                    bodyText = "Error getting account data",
+                    onAccept = {
+                        viewModel.sendIntent(UiIntent.HideErrorDialog)
+                    },
+                    onCancel = {
+                        viewModel.sendIntent(UiIntent.HideErrorDialog)
+                    }
+                )
             }
         }
     }

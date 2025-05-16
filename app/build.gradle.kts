@@ -63,4 +63,5 @@ dependencies {
     implementation(projects.feature.selectDatabase)
     implementation(projects.feature.home)
     implementation(projects.feature.addEditAccount)
+    implementation(projects.feature.accountDetail)
 }

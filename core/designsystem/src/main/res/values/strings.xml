@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
   <string name="app_name">KPass</string>
+  <string name="accounts_screen_title">Accounts</string>
+  <string name="account_detail_screen_title">Account detail</string>
+  <string name="action_delete">Delete</string>
+  <string name="action_edit">Edit</string>
+  <string name="github">GitHub</string>
+  <string name="linkedin">LinkedIn</string>
+  <string name="select_another_database">Select another database</string>
+  <string name="title">Title</string>
+  <string name="email">Email</string>
+  <string name="password">Password</string>
+  <string name="description">Description</string>
+  <string name="delete_account">Delete this account?</string>
+  <string name="can_not_undone_action">This action can \'t be undoned</string>
+  <string name="fingerprint_access_title">Fingerprint access</string>
+  <string name="fingerprint_access_body">Enter your fingerprint</string>
 </resources>

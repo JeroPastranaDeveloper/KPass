@@ -1,6 +1,7 @@
 package com.jero.kpass
 
 import android.app.Application
+import com.jero.account_detail.di.accountDetailViewModelModule
 import com.jero.add_edit_account.di.addEditAccountViewModelModule
 import com.jero.data.di.fileManagerModule
 import com.jero.data.di.filePermissionManagerModule
@@ -25,6 +26,7 @@ class App : Application() {
                 preferencesModule,
                 fileManagerModule,
                 filePermissionManagerModule,
+                accountDetailViewModelModule,
             )
         }
     }
