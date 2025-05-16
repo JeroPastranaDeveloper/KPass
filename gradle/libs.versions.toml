@@ -33,6 +33,7 @@ androidxTest = "1.6.1"
 foundationAndroid = "1.8.1"
 firebaseCrashlyticsBuildtools = "3.0.3"
 gson = "2.11.0"
+biometricAuth = "1.1.0"
 
 [libraries]
 androidx-core = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -79,6 +80,9 @@ koin-androidx-navigation = { module = "io.insert-koin:koin-androidx-navigation",
 android-gradlePlugin = { group = "com.android.tools.build", name = "gradle", version.ref = "agp" }
 compose-compiler-gradlePlugin = { group = "org.jetbrains.kotlin", name = "compose-compiler-gradle-plugin", version.ref = "kotlin" }
 kotlin-gradlePlugin = { group = "org.jetbrains.kotlin", name = "kotlin-gradle-plugin", version.ref = "kotlin" }
+
+#Biometric Authentication
+androidx-biometric = { group = "androidx.biometric", name = "biometric", version.ref = "biometricAuth" }
 
 #Retrofit
 retrofit-bom = { module = "com.squareup.retrofit2:retrofit-bom", version.ref = "retrofit" }

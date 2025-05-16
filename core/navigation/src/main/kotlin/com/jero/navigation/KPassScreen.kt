@@ -22,4 +22,13 @@ sealed interface KPassScreen {
             )
         }
     }
+
+    @Serializable
+    data class AccountDetail(val id: String) : KPassScreen {
+        companion object {
+            val typeMap = mapOf(
+                typeOf<String>() to NavType.StringType
+            )
+        }
+    }
 }

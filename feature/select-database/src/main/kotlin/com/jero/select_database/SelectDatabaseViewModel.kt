@@ -13,20 +13,33 @@ class SelectDatabaseViewModel(
     override val initialViewState = UiState()
     override suspend fun manageIntent(intent: UiIntent) {
         when (intent) {
-            UiIntent.SelectDatabase -> dispatchAction(UiAction.SelectDatabase)
-            is UiIntent.SyncWithFileUri -> saveDatabaseUri(intent.uri)
-            UiIntent.GoToAccountsScreen -> checkDatabase()
             UiIntent.CreateDatabase -> dispatchAction(UiAction.CreateDatabase)
+            UiIntent.DoBiometricAuthentication -> doBiometricAuthentication()
+            UiIntent.SelectDatabase -> dispatchAction(UiAction.SelectDatabase)
+            UiIntent.SetupBiometricAuthentication -> setState {
+                copy(
+                    canDoBiometricAuthentication = preferencesHandler.databaseUri.orEmpty().isNotEmpty()
+                )
+            }
+            is UiIntent.SyncWithFileUri -> saveDatabaseUri(intent.uri)
         }
     }
 
     init {
-        checkDatabase()
+        doBiometricAuthentication()
     }
 
-    private fun checkDatabase() {
+    private fun doBiometricAuthentication() {
+        val canDoBiometricAuthentication = preferencesHandler.databaseUri.orEmpty().isNotEmpty()
+        setState {
+            copy(
+                canDoBiometricAuthentication = canDoBiometricAuthentication
+            )
+        }
         if (preferencesHandler.databaseUri.orEmpty().isNotEmpty()) {
-            dispatchAction(UiAction.GoToAccountsScreen)
+            dispatchAction(UiAction.DoBiometricAuthentication(goToAccountsScreen = {
+                dispatchAction(UiAction.GoToAccountsScreen)
+            }))
         }
     }
 

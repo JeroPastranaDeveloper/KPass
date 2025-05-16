@@ -1,28 +1,35 @@
 package com.jero.select_database
 
-import android.content.Context
-import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.SharedTransitionScope
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.fragment.app.FragmentActivity
 import com.example.domain.file_permissions_manager.FilePermissionManager
+import com.jero.biometric_authentication.BiometricAuthenticator
 import com.jero.core.designsystem.R
 import com.jero.core.screen.HandleActions
 import com.jero.core.screen.SetStatusBarIconsColor
@@ -42,6 +49,10 @@ fun SharedTransitionScope.SelectDatabaseScreen(
 ) {
     val composeNavigator = currentComposeNavigator
     val state by viewModel.state.collectAsState(UiState())
+
+    LaunchedEffect(Unit) {
+        viewModel.sendIntent(UiIntent.SetupBiometricAuthentication)
+    }
 
     SetStatusBarIconsColor()
 
@@ -68,7 +79,6 @@ fun SharedTransitionScope.SelectDatabaseScreen(
         }
     }
 
-
     Scaffold(
         topBar = { KPassAppBar() },
     ) { paddingValues ->
@@ -83,12 +93,29 @@ fun SharedTransitionScope.SelectDatabaseScreen(
                 contentDescription = null,
                 modifier = Modifier.padding(vertical = 32.dp)
             )
+            Spacer(modifier = Modifier.weight(1f))
+            if (state.canDoBiometricAuthentication) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_fingerprint),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .padding(vertical = 32.dp)
+                        .size(64.dp)
+                        .clickable {
+                            viewModel.sendIntent(UiIntent.DoBiometricAuthentication)
+                        }
+                )
+            }
 
             Button(
                 onClick = {
                     viewModel.sendIntent(UiIntent.CreateDatabase)
                 },
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Black,
+                    contentColor = Color.White
+                ),
             ) {
                 Text(
                     text = "Create Database",
@@ -99,7 +126,11 @@ fun SharedTransitionScope.SelectDatabaseScreen(
                 onClick = {
                     viewModel.sendIntent(UiIntent.SelectDatabase)
                 },
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Black,
+                    contentColor = Color.White
+                ),
             ) {
                 Text(
                     text = "Select Database",
@@ -110,16 +141,17 @@ fun SharedTransitionScope.SelectDatabaseScreen(
 
     HandleActions(viewModel.actions) { action ->
         when (action) {
-            is UiAction.SelectDatabase -> openDatabaseLauncher.launch(arrayOf("application/octet-stream"))
-
-            UiAction.GoToAccountsScreen -> composeNavigator.navigate(KPassScreen.Accounts)
-
             UiAction.CreateDatabase -> createDatabaseLauncher.launch("kpass_backup.kdbx")
+            is UiAction.DoBiometricAuthentication -> {
+                val activity = context as? FragmentActivity
+                activity?.let {
+                    BiometricAuthenticator(it).authenticate {
+                        action.goToAccountsScreen()
+                    }
+                }
+            }
+            UiAction.GoToAccountsScreen -> composeNavigator.navigate(KPassScreen.Accounts)
+            is UiAction.SelectDatabase -> openDatabaseLauncher.launch(arrayOf("application/octet-stream"))
         }
     }
-}
-
-private fun checkPermissions(context: Context, uri1: Uri) {
-    val flags = Intent.FLAG_GRANT_READ_URI_PERMISSION or Intent.FLAG_GRANT_WRITE_URI_PERMISSION
-    context.contentResolver.takePersistableUriPermission(uri1, flags)
 }

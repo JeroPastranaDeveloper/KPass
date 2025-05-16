@@ -3,6 +3,7 @@ package com.jero.kpass.navigation
 import androidx.compose.animation.SharedTransitionScope
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import com.jero.account_detail.AccountDetailScreen
 import com.jero.add_edit_account.AddEditAccountScreen
 import com.jero.home.AccountsScreen
 import com.jero.login.KPassHome
@@ -27,5 +28,11 @@ fun NavGraphBuilder.kpassNavigation() {
         typeMap = KPassScreen.AddEditAccount.typeMap
     ) {
         AddEditAccountScreen(this)
+    }
+
+    composable<KPassScreen.AccountDetail>(
+        typeMap = KPassScreen.AccountDetail.typeMap
+    ) {
+        AccountDetailScreen(this)
     }
 }
