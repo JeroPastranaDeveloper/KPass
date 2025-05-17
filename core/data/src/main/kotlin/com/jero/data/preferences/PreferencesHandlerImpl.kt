@@ -2,8 +2,8 @@ package com.jero.data.preferences
 
 import android.content.Context
 import android.content.SharedPreferences
-import com.example.domain.preferences.PreferencesHandler
 import com.jero.core.utils.emptyString
+import com.jero.domain.preferences.PreferencesHandler
 
 class PreferencesHandlerImpl(context: Context) : PreferencesHandler {
 

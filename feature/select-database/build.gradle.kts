@@ -13,6 +13,7 @@ dependencies {
     implementation(projects.core.viewmodel)
     implementation(projects.core.domain)
     implementation(projects.core.screen)
+    implementation(projects.core.utils)
 
     implementation(projects.biometricAuthentication)
     implementation(libs.firebase.crashlytics.buildtools)

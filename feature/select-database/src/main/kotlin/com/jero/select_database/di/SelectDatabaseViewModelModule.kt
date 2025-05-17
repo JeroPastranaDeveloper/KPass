@@ -5,5 +5,5 @@ import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.dsl.module
 
 val SelectDatabaseViewModelModule = module {
-    viewModel { SelectDatabaseViewModel(get()) }
+    viewModel { SelectDatabaseViewModel(get(), get()) }
 }

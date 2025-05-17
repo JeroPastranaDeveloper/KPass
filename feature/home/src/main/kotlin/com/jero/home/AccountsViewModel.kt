@@ -2,13 +2,17 @@ package com.jero.home
 
 import android.net.Uri
 import androidx.core.net.toUri
-import com.example.domain.preferences.PreferencesHandler
+import androidx.lifecycle.viewModelScope
 import com.jero.core.model.Account
 import com.jero.core.utils.emptyPairStrings
 import com.jero.core.viewmodel.BaseViewModelWithActions
+import com.jero.domain.preferences.PreferencesHandler
 import com.jero.home.AccountsViewContract.UiAction
 import com.jero.home.AccountsViewContract.UiIntent
 import com.jero.home.AccountsViewContract.UiState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AccountsViewModel(
     private val preferencesHandler: PreferencesHandler,
@@ -47,9 +51,14 @@ class AccountsViewModel(
     }
 
     private fun loadAccounts() {
-        setState { copy(isLoading = true) }
-        preferencesHandler.isLogged = true
-        dispatchAction(UiAction.LoadAccounts(preferencesHandler.databaseUri.orEmpty()))
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                setState { copy(isLoading = true) }
+                preferencesHandler.isLogged = true
+                val uri = preferencesHandler.databaseUri.orEmpty()
+                dispatchAction(UiAction.LoadAccounts(uri))
+            }
+        }
     }
 
     private fun setAccounts(accounts: List<Account>) {

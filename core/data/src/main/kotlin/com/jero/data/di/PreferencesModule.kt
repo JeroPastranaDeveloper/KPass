@@ -1,7 +1,7 @@
 package com.jero.data.di
 
-import com.example.domain.preferences.PreferencesHandler
 import com.jero.data.preferences.PreferencesHandlerImpl
+import com.jero.domain.preferences.PreferencesHandler
 import org.koin.dsl.module
 
 val preferencesModule = module {

@@ -1,4 +1,4 @@
-package com.example.domain.preferences
+package com.jero.domain.preferences
 
 interface PreferencesHandler {
     var databaseUri: String?

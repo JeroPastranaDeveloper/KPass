@@ -2,11 +2,15 @@ package com.jero.account_detail
 
 import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
-import com.example.domain.preferences.PreferencesHandler
-import com.jero.core.viewmodel.BaseViewModelWithActions
-import com.jero.account_detail.AccountDetailViewContract.UiState
-import com.jero.account_detail.AccountDetailViewContract.UiIntent
+import androidx.lifecycle.viewModelScope
 import com.jero.account_detail.AccountDetailViewContract.UiAction
+import com.jero.account_detail.AccountDetailViewContract.UiIntent
+import com.jero.account_detail.AccountDetailViewContract.UiState
+import com.jero.core.viewmodel.BaseViewModelWithActions
+import com.jero.domain.preferences.PreferencesHandler
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class AccountDetailViewModel(
     private val preferencesHandler: PreferencesHandler,
@@ -42,13 +46,17 @@ class AccountDetailViewModel(
     }
 
     private fun loadAccountData() {
-        setState { copy(isLoading = true) }
-        dispatchAction(
-            UiAction.LoadAccountData(
-                accountId = accountId,
-                databaseUri = preferencesHandler.databaseUri.orEmpty().toUri()
-            )
-        )
+        viewModelScope.launch {
+            withContext(Dispatchers.IO) {
+                setState { copy(isLoading = true) }
+                dispatchAction(
+                    UiAction.LoadAccountData(
+                        accountId = accountId,
+                        databaseUri = preferencesHandler.databaseUri.orEmpty().toUri()
+                    )
+                )
+            }
+        }
     }
 
     private fun deleteAccount() {

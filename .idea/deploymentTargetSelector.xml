@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="KPass.app">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2025-05-11T20:22:54.504987Z">
+        <DropdownSelection timestamp="2025-05-16T11:49:34.253978Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="LocalEmulator" identifier="path=/Users/roxas/.android/avd/Android_15_API_35.avd" />

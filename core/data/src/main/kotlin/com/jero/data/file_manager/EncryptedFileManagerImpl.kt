@@ -2,22 +2,24 @@ package com.jero.data.file_manager
 
 import android.content.Context
 import android.net.Uri
-import com.example.domain.file_manager.FileManager
-import com.google.gson.Gson
 import com.jero.core.model.Account
+import com.jero.domain.file_manager.FileManager
+import com.jero.domain.file_manager.SecureFileManager
+import com.jero.domain.session.SessionManager
 
-class FileManagerImpl : FileManager {
-    override fun readAccounts(context: Context, uri: Uri): List<Account> =
-        context.contentResolver.openInputStream(uri)?.use { inputStream ->
-            val json = inputStream.bufferedReader().use { it.readText() }
-            if (json.isBlank()) emptyList() else Gson().fromJson(json, Array<Account>::class.java).toList()
-        }.orEmpty()
+class EncryptedFileManagerImpl(
+    private val secureFileManager: SecureFileManager,
+    private val sessionManager: SessionManager
+) : FileManager {
+
+    override fun readAccounts(context: Context, uri: Uri): List<Account> {
+        val password = sessionManager.databasePassword.orEmpty()
+        return secureFileManager.decryptAndRead(context, uri, password).orEmpty()
+    }
 
     override fun writeAccounts(context: Context, uri: Uri, accounts: List<Account>) {
-        context.contentResolver.openOutputStream(uri, "wt")?.use { outputStream ->
-            val json = Gson().toJson(accounts)
-            outputStream.write(json.toByteArray())
-        }
+        val password = sessionManager.databasePassword ?: return
+        secureFileManager.encryptAndSave(context, uri, password, accounts)
     }
 
     override fun upsertAccount(context: Context, uri: Uri, account: Account) {
@@ -30,8 +32,9 @@ class FileManagerImpl : FileManager {
         writeAccounts(context, uri, updatedAccounts)
     }
 
-    override fun readAccountById(context: Context, uri: Uri, accountId: String): Account? =
-        readAccounts(context, uri).find { it.id == accountId }
+    override fun readAccountById(context: Context, uri: Uri, accountId: String): Account? {
+        return readAccounts(context, uri).find { it.id == accountId }
+    }
 
     override fun deleteAccount(context: Context, uri: Uri, accountId: String): List<Account> {
         val updatedAccounts = readAccounts(context, uri).filterNot { it.id == accountId }

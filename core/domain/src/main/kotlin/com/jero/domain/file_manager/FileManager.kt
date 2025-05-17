@@ -1,4 +1,4 @@
-package com.example.domain.file_manager
+package com.jero.domain.file_manager
 
 import android.content.Context
 import android.net.Uri

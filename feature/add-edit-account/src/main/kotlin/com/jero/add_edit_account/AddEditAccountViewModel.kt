@@ -2,12 +2,12 @@ package com.jero.add_edit_account
 
 import androidx.core.net.toUri
 import androidx.lifecycle.SavedStateHandle
-import com.example.domain.preferences.PreferencesHandler
 import com.jero.add_edit_account.AddEditAccountViewContract.UiAction
 import com.jero.add_edit_account.AddEditAccountViewContract.UiIntent
 import com.jero.add_edit_account.AddEditAccountViewContract.UiState
 import com.jero.core.model.Account
 import com.jero.core.viewmodel.BaseViewModelWithActions
+import com.jero.domain.preferences.PreferencesHandler
 
 class AddEditAccountViewModel(
     private val preferencesHandler: PreferencesHandler,

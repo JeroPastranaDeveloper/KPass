@@ -17,7 +17,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -28,13 +28,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
-import com.example.domain.file_manager.FileManager
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.jero.core.designsystem.R
 import com.jero.core.screen.HandleActions
 import com.jero.core.screen.SetStatusBarIconsColor
 import com.jero.core.utils.emptyString
 import com.jero.designsystem.components.CustomDialog
 import com.jero.designsystem.components.KPassAppBar
+import com.jero.domain.file_manager.FileManager
 import com.jero.home.AccountsViewContract.UiAction
 import com.jero.home.AccountsViewContract.UiIntent
 import com.jero.home.AccountsViewContract.UiState
@@ -55,8 +58,20 @@ fun SharedTransitionScope.AccountsScreen(
     val context = LocalContext.current
     val fileManager: FileManager = koinInject()
 
-    LaunchedEffect(Unit) {
-        viewModel.sendIntent(UiIntent.LoadAccounts)
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.sendIntent(UiIntent.LoadAccounts)
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 
     Scaffold(
@@ -144,7 +159,6 @@ fun SharedTransitionScope.AccountsScreen(
     BackHandler {
         (context as? Activity)?.finish()
     }
-
     HandleActions(viewModel.actions) { action ->
         when (action) {
             is UiAction.OnAddSeeAccount -> {
@@ -161,8 +175,7 @@ fun SharedTransitionScope.AccountsScreen(
             }
 
             is UiAction.DeleteAccount -> {
-                val updatedAccounts =
-                    fileManager.deleteAccount(context, action.uri, action.accountId)
+                val updatedAccounts = fileManager.deleteAccount(context, action.uri, action.accountId)
                 viewModel.sendIntent(UiIntent.SetAccounts(updatedAccounts))
             }
 

@@ -28,12 +28,13 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.FragmentActivity
-import com.example.domain.file_permissions_manager.FilePermissionManager
 import com.jero.biometric_authentication.BiometricAuthenticator
 import com.jero.core.designsystem.R
 import com.jero.core.screen.HandleActions
 import com.jero.core.screen.SetStatusBarIconsColor
 import com.jero.designsystem.components.KPassAppBar
+import com.jero.designsystem.components.PasswordDialog
+import com.jero.domain.file_permissions_manager.FilePermissionManager
 import com.jero.navigation.KPassScreen
 import com.jero.navigation.currentComposeNavigator
 import com.jero.select_database.SelectDatabaseViewContract.UiAction
@@ -64,9 +65,7 @@ fun SharedTransitionScope.SelectDatabaseScreen(
         contract = ActivityResultContracts.CreateDocument("application/octet-stream")
     ) { uri: Uri? ->
         uri?.let {
-            filePermissionManager.checkPermissions(context, it)
-            filePermissionManager.initializeDatabaseFile(context, it)
-            viewModel.sendIntent(UiIntent.SyncWithFileUri(it.toString()))
+            viewModel.sendIntent(UiIntent.AskPasswordForUri(it, isCreation = true))
         }
     }
 
@@ -74,14 +73,25 @@ fun SharedTransitionScope.SelectDatabaseScreen(
         contract = ActivityResultContracts.OpenDocument()
     ) { uri: Uri? ->
         uri?.let {
-            filePermissionManager.checkPermissions(context, it)
-            viewModel.sendIntent(UiIntent.SyncWithFileUri(it.toString()))
+            viewModel.sendIntent(UiIntent.AskPasswordForUri(it, isCreation = false))
         }
     }
 
     Scaffold(
         topBar = { KPassAppBar() },
     ) { paddingValues ->
+
+        if (state.showDatabasePasswordDialog) {
+            PasswordDialog(
+                "Introduce your password",
+                "Introduce your password to access the database",
+                onDismiss = { },
+                onConfirm = { password ->
+                    viewModel.sendIntent(UiIntent.SetPasswordInRAM(password))
+                }
+            )
+        }
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -111,7 +121,9 @@ fun SharedTransitionScope.SelectDatabaseScreen(
                 onClick = {
                     viewModel.sendIntent(UiIntent.CreateDatabase)
                 },
-                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 8.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black,
                     contentColor = Color.White
@@ -126,7 +138,9 @@ fun SharedTransitionScope.SelectDatabaseScreen(
                 onClick = {
                     viewModel.sendIntent(UiIntent.SelectDatabase)
                 },
-                modifier = Modifier.fillMaxWidth().padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(start = 16.dp, top = 16.dp, end = 16.dp, bottom = 16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Black,
                     contentColor = Color.White
@@ -146,12 +160,29 @@ fun SharedTransitionScope.SelectDatabaseScreen(
                 val activity = context as? FragmentActivity
                 activity?.let {
                     BiometricAuthenticator(it).authenticate {
-                        action.goToAccountsScreen()
+                        action.showDatabasePasswordDialog()
                     }
                 }
             }
+
             UiAction.GoToAccountsScreen -> composeNavigator.navigate(KPassScreen.Accounts)
             is UiAction.SelectDatabase -> openDatabaseLauncher.launch(arrayOf("application/octet-stream"))
+            is UiAction.RequestPasswordForCreation -> {
+                val password = state.databasePassword
+                if (password.isNotEmpty()) {
+                    filePermissionManager.checkPermissions(context, action.uri)
+                    filePermissionManager.initializeEncryptedDatabaseFile(context, action.uri, password)
+                    viewModel.sendIntent(UiIntent.GoToAccountsScreen)
+                }
+            }
+
+            is UiAction.RequestPasswordForOpening -> {
+                val password = state.databasePassword
+                if (password.isNotEmpty()) {
+                    filePermissionManager.checkPermissions(context, action.uri)
+                    viewModel.sendIntent(UiIntent.GoToAccountsScreen)
+                }
+            }
         }
     }
 }

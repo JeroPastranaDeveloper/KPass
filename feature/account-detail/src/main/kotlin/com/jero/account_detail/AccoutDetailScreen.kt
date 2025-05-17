@@ -12,7 +12,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -22,7 +22,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.domain.file_manager.FileManager
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.jero.account_detail.AccountDetailViewContract.UiAction
 import com.jero.account_detail.AccountDetailViewContract.UiIntent
 import com.jero.account_detail.AccountDetailViewContract.UiState
@@ -34,6 +36,7 @@ import com.jero.core.screen.SetStatusBarIconsColor
 import com.jero.designsystem.components.CustomDialog
 import com.jero.designsystem.components.DetailText
 import com.jero.designsystem.components.KPassAppBar
+import com.jero.domain.file_manager.FileManager
 import com.jero.navigation.KPassScreen.AddEditAccount
 import com.jero.navigation.currentComposeNavigator
 import org.koin.androidx.compose.koinViewModel
@@ -51,8 +54,20 @@ fun SharedTransitionScope.AccountDetailScreen(
     val context = LocalContext.current
     val fileManager: FileManager = koinInject()
 
-    LaunchedEffect(Unit) {
-        viewModel.sendIntent(UiIntent.LoadAccountData)
+    val lifecycleOwner = LocalLifecycleOwner.current
+
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.sendIntent(UiIntent.LoadAccountData)
+            }
+        }
+
+        lifecycleOwner.lifecycle.addObserver(observer)
+
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
     }
 
     HandleActions(viewModel.actions) { action ->
